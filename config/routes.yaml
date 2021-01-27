@@ -1,3 +1,6 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+    path: /
+    controller: App\Controller\ContactController::index
+app_api:
+    resource: ../src/Controller/Api
+    type:     annotation

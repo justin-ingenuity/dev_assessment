@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Welcome!{% endblock %}
+
+{% block javascripts %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+    $(document).ready(function(){
+        $("#contactForm").on("submit", function(e){
+            e.preventDefault();
+
+            $.ajax({
+                url: "/api/contact",
+                type: "POST",
+                data: $("#contactForm").serialize(),
+                success: function(result){
+                    alert(result.message);
+                    if(result.success)
+                        $("#contactForm").trigger('reset');
+                }
+            })
+            .done(function(){
+                grecaptcha.reset();
+                requireRecaptcha();
+            });
+        });
+
+        window.onload = function() {
+            requireRecaptcha();
+        };
+
+        requireRecaptcha = function(){
+            var $recaptcha = document.querySelector('#g-recaptcha-response');
+
+            if($recaptcha) {
+                $recaptcha.setAttribute("required", "required");
+            }
+        }
+    });
+</script>
+{% endblock %}
+
+{% block body %}
+<style>
+    input { margin-left: 15px; }
+    .g-recaptcha { margin-bottom: 15px; }
+    #g-recaptcha-response {
+        display: block !important;
+        position: absolute;
+        margin: -78px 0 0 0 !important;
+        width: 302px !important;
+        height: 76px !important;
+        z-index: -999999;
+        opacity: 0;
+    }
+</style>
+
+<h4>Create Contact</h4>
+{{form_start(form, {'attr': {'id': 'contactForm'}})}}
+{{ form_row(form.first_name) }}
+{{ form_row(form.last_name) }}
+{{ form_row(form.email) }}
+
+<div class="g-recaptcha" data-sitekey="6LcBmDwaAAAAAFJE49vzoPwQNQiVorBGTVyRMBCO"></div>
+
+{{ form_row(form.save) }}
+{{form_end(form)}}
+
+{% endblock %}
